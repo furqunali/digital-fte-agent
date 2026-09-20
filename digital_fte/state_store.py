@@ -5,7 +5,7 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 
-from digital_fte.loop import LoopResult
+from digital_fte.loop import LoopEvent, LoopResult, LoopStep
 
 
 class LoopStateStore:
@@ -30,16 +30,16 @@ class LoopStateStore:
             status=data["status"],
             iterations=data["iterations"],
             steps=tuple(
-                {"agent": step["agent"], "state": step["state"], "iteration": step["iteration"]}
+                LoopStep(agent=step["agent"], state=step["state"], iteration=step["iteration"])
                 for step in data["steps"]
             ),
             events=tuple(
-                {
-                    "agent": event["agent"],
-                    "iteration": event["iteration"],
-                    "input_state": event["input_state"],
-                    "output_state": event["output_state"],
-                }
+                LoopEvent(
+                    agent=event["agent"],
+                    iteration=event["iteration"],
+                    input_state=event["input_state"],
+                    output_state=event["output_state"],
+                )
                 for event in data["events"]
             ),
             final_state=data["final_state"],
