@@ -25,6 +25,8 @@ def test_loop_stops_after_validation_success() -> None:
     assert result.status == "completed"
     assert result.iterations == 1
     assert result.steps[0].agent == "planner"
+    assert result.events[0].input_state == "received"
+    assert result.events[0].output_state == "received|planned"
 
 
 def test_loop_records_failure_after_iteration_limit() -> None:
@@ -33,6 +35,8 @@ def test_loop_records_failure_after_iteration_limit() -> None:
     assert result.status == "failed"
     assert result.iterations == 2
     assert len(result.steps) == 2
+    assert len(result.events) == 2
+    assert result.events[-1].iteration == 2
 
 
 def test_loop_requires_agents_and_positive_limit() -> None:
