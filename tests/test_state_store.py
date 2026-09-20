@@ -18,3 +18,20 @@ def test_state_store_round_trips_loop_result(tmp_path):
     restored = store.load("task-1")
     assert path.name == "task-1.json"
     assert restored == result
+    assert not (tmp_path / "task-1.json.tmp").exists()
+
+
+def test_state_store_replaces_existing_snapshot_atomically(tmp_path):
+    store = LoopStateStore(tmp_path)
+    first = LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run(
+        "task-1", "first"
+    )
+    second = LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run(
+        "task-1", "second"
+    )
+
+    store.save(first)
+    store.save(second)
+
+    assert store.load("task-1") == second
+    assert not (tmp_path / "task-1.json.tmp").exists()
