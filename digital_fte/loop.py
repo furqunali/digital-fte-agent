@@ -45,7 +45,12 @@ class Agent(Protocol):
 class LoopOrchestrator:
     """Run deterministic agent stages until validation succeeds or a limit is hit."""
 
-    def __init__(self, agents: tuple[Agent, ...], validator: Callable[[str], bool], max_iterations: int = 3) -> None:
+    def __init__(
+        self,
+        agents: tuple[Agent, ...],
+        validator: Callable[[str], bool],
+        max_iterations: int = 3,
+    ) -> None:
         if not agents:
             raise ValueError("at least one agent is required")
         if max_iterations < 1:
@@ -55,15 +60,55 @@ class LoopOrchestrator:
         self.max_iterations = max_iterations
 
     def run(self, task_id: str, initial_state: str) -> LoopResult:
+        return self._run(
+            task_id,
+            initial_state,
+            start_iteration=1,
+            steps=(),
+            events=(),
+        )
+
+    def resume(self, result: LoopResult, additional_iterations: int = 1) -> LoopResult:
+        """Continue an incomplete result without replaying completed iterations."""
+        if result.status == "completed":
+            return result
+        if additional_iterations < 1:
+            raise ValueError("additional_iterations must be positive")
+        return self._run(
+            result.task_id,
+            result.final_state,
+            start_iteration=result.iterations + 1,
+            steps=result.steps,
+            events=result.events,
+            iteration_limit=result.iterations + additional_iterations,
+        )
+
+    def _run(
+        self,
+        task_id: str,
+        initial_state: str,
+        *,
+        start_iteration: int,
+        steps: tuple[LoopStep, ...],
+        events: tuple[LoopEvent, ...],
+        iteration_limit: int | None = None,
+    ) -> LoopResult:
         state = initial_state
-        steps: list[LoopStep] = []
-        events: list[LoopEvent] = []
-        for iteration in range(1, self.max_iterations + 1):
+        step_list = list(steps)
+        event_list = list(events)
+        limit = iteration_limit if iteration_limit is not None else self.max_iterations
+        for iteration in range(start_iteration, limit + 1):
             for agent in self.agents:
                 input_state = state
                 state = agent.run(LoopContext(task_id, iteration, state))
-                steps.append(LoopStep(agent.name, state, iteration))
-                events.append(LoopEvent(agent.name, iteration, input_state, state))
+                step_list.append(LoopStep(agent.name, state, iteration))
+                event_list.append(LoopEvent(agent.name, iteration, input_state, state))
             if self.validator(state):
-                return LoopResult(task_id, "completed", iteration, tuple(steps), tuple(events), state)
-        return LoopResult(task_id, "failed", self.max_iterations, tuple(steps), tuple(events), state)
+                return LoopResult(
+                    task_id, "completed", iteration,
+                    tuple(step_list), tuple(event_list), state
+                )
+        return LoopResult(
+            task_id, "failed", limit,
+            tuple(step_list), tuple(event_list), state
+        )
