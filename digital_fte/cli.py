@@ -2,6 +2,7 @@ from __future__ import annotations
 import argparse,json
 from pathlib import Path
 from .engine import TaskEngine
+from .loop import LoopOrchestrator
 
 def build_parser():
     p=argparse.ArgumentParser(description="Run Digital FTE tasks from a vault")
