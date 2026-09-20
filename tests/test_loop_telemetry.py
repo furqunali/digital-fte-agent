@@ -1,10 +1,13 @@
 from digital_fte.loop import LoopOrchestrator
 from digital_fte.loop_telemetry import to_json
 
+
 class Agent:
     name = "planner"
+
     def run(self, context):
         return context.state + "|done"
+
 
 def test_loop_telemetry_is_stable_json():
     result = LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run("task-1", "start")
