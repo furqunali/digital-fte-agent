@@ -1,0 +1,24 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ["3.10", "3.11", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: ${{ matrix.python }}}
+      - run: python -m pip install -e . pytest
+      - run: pytest -q
+      - name: Eligible LOC audit
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          ex={".git",".venv","venv","__pycache__","node_modules"}
+          files=[p for p in Path('.').rglob('*.py') if not any(x in ex for x in p.parts)]
+          loc=sum(sum(1 for line in p.read_text(encoding='utf-8',errors='ignore').splitlines() if line.strip()) for p in files)
+          print(f"ELIGIBLE_FILES={len(files)}")
+          print(f"ELIGIBLE_LOC={loc}")
+          PY
