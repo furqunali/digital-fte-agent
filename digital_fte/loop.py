@@ -19,11 +19,20 @@ class LoopStep:
 
 
 @dataclass(frozen=True)
+class LoopEvent:
+    agent: str
+    iteration: int
+    input_state: str
+    output_state: str
+
+
+@dataclass(frozen=True)
 class LoopResult:
     task_id: str
     status: str
     iterations: int
     steps: tuple[LoopStep, ...]
+    events: tuple[LoopEvent, ...]
     final_state: str
 
 
@@ -48,10 +57,13 @@ class LoopOrchestrator:
     def run(self, task_id: str, initial_state: str) -> LoopResult:
         state = initial_state
         steps: list[LoopStep] = []
+        events: list[LoopEvent] = []
         for iteration in range(1, self.max_iterations + 1):
             for agent in self.agents:
+                input_state = state
                 state = agent.run(LoopContext(task_id, iteration, state))
                 steps.append(LoopStep(agent.name, state, iteration))
+                events.append(LoopEvent(agent.name, iteration, input_state, state))
             if self.validator(state):
-                return LoopResult(task_id, "completed", iteration, tuple(steps), state)
-        return LoopResult(task_id, "failed", self.max_iterations, tuple(steps), state)
+                return LoopResult(task_id, "completed", iteration, tuple(steps), tuple(events), state)
+        return LoopResult(task_id, "failed", self.max_iterations, tuple(steps), tuple(events), state)
