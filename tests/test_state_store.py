@@ -35,3 +35,13 @@ def test_state_store_replaces_existing_snapshot_atomically(tmp_path):
 
     assert store.load("task-1") == second
     assert not (tmp_path / "task-1.json.tmp").exists()
+
+
+import pytest
+
+
+@pytest.mark.parametrize("task_id", ["", ".", "..", "../escape", "nested/task", "nested\\task"])
+def test_state_store_rejects_unsafe_task_ids(tmp_path, task_id):
+    store = LoopStateStore(tmp_path)
+    with pytest.raises(ValueError):
+        store.load(task_id)
