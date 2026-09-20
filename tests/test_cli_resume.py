@@ -23,5 +23,5 @@ def test_loop_command_persists_result(tmp_path, monkeypatch):
 
     assert main() == 0
     state = (tmp_path / "task-1.json").read_text(encoding="utf-8")
-    assert '"status": "completed"' in state
-    assert '"final_state": "ready|planned|executed"' in state
+    assert '"status":"completed"' in state
+    assert '"final_state":"ready|planned|executed"' in state
