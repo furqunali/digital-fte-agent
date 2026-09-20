@@ -47,13 +47,17 @@ def main():
     if args.command == "run":
         result = TaskEngine(args.vault).process(args.task)
     elif args.command == "loop":
+        from .state_store import LoopStateStore
+
         result = LoopOrchestrator(
             (PlannerAgent(), ExecutorAgent()),
             lambda state: state.endswith("|executed"),
             max_iterations=args.max_iterations,
         ).run(args.task_id, args.state)
+        LoopStateStore(args.state_dir).save(result)
     else:
         from .state_store import LoopStateStore
+
         store = LoopStateStore(args.state_dir)
         result = LoopOrchestrator(
             (PlannerAgent(), ExecutorAgent()),
