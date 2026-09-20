@@ -34,4 +34,4 @@ def test_resume_reports_missing_state_cleanly(tmp_path, monkeypatch, capsys):
     )
 
     assert main() == 2
-    assert capsys.readouterr().out.strip() == '{"status": "missing_state", "task_id": "missing-task"}'
+    assert capsys.readouterr().out.strip() == '{"task_id": "missing-task", "status": "missing_state"}'
