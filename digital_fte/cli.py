@@ -59,10 +59,15 @@ def main():
         from .state_store import LoopStateStore
 
         store = LoopStateStore(args.state_dir)
+        try:
+            persisted = store.load(args.task_id)
+        except FileNotFoundError:
+            print(json.dumps({"task_id": args.task_id, "status": "missing_state"}))
+            return 2
         result = LoopOrchestrator(
             (PlannerAgent(), ExecutorAgent()),
             lambda state: state.endswith("|executed"),
-        ).resume(store.load(args.task_id), args.additional_iterations)
+        ).resume(persisted, args.additional_iterations)
         store.save(result)
     print(json.dumps(asdict(result), indent=2))
     return 0 if result.status == "completed" else 1
