@@ -18,7 +18,12 @@ class LoopStateStore:
     def _validate_task_id(task_id: str) -> None:
         if not isinstance(task_id, str) or not task_id.strip():
             raise ValueError("task_id must be a non-empty string")
-        if task_id in {".", ".."} or Path(task_id).name != task_id:
+        if (
+            task_id in {".", ".."}
+            or "/" in task_id
+            or "\\" in task_id
+            or Path(task_id).name != task_id
+        ):
             raise ValueError("task_id must be a single path-safe name")
 
     def save(self, result: LoopResult) -> Path:
@@ -50,8 +55,19 @@ class LoopStateStore:
                 task_id=task_id,
                 status=data["status"],
                 iterations=data["iterations"],
-                steps=tuple(LoopStep(agent=s["agent"], state=s["state"], iteration=s["iteration"]) for s in steps),
-                events=tuple(LoopEvent(agent=e["agent"], iteration=e["iteration"], input_state=e["input_state"], output_state=e["output_state"]) for e in events),
+                steps=tuple(
+                    LoopStep(agent=s["agent"], state=s["state"], iteration=s["iteration"])
+                    for s in steps
+                ),
+                events=tuple(
+                    LoopEvent(
+                        agent=e["agent"],
+                        iteration=e["iteration"],
+                        input_state=e["input_state"],
+                        output_state=e["output_state"],
+                    )
+                    for e in events
+                ),
                 final_state=data["final_state"],
             )
         except (KeyError, TypeError, ValueError) as exc:
