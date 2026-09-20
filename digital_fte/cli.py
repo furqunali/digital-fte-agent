@@ -28,6 +28,7 @@ class ExecutorAgent:
 def build_parser():
     parser = argparse.ArgumentParser(description="Run Digital FTE tasks from a vault")
     parser.add_argument("--vault", type=Path, default=Path("AI_Employee_Vault"))
+    parser.add_argument("--state-dir", type=Path, default=Path("AI_Employee_Vault/State"))
     sub = parser.add_subparsers(dest="command", required=True)
     run = sub.add_parser("run", help="execute a markdown task")
     run.add_argument("task", type=Path)
@@ -35,6 +36,9 @@ def build_parser():
     loop.add_argument("task_id")
     loop.add_argument("state")
     loop.add_argument("--max-iterations", type=int, default=3)
+    resume = sub.add_parser("resume", help="resume a persisted multi-agent loop")
+    resume.add_argument("task_id")
+    resume.add_argument("--additional-iterations", type=int, default=1)
     return parser
 
 
@@ -42,12 +46,20 @@ def main():
     args = build_parser().parse_args()
     if args.command == "run":
         result = TaskEngine(args.vault).process(args.task)
-    else:
+    elif args.command == "loop":
         result = LoopOrchestrator(
             (PlannerAgent(), ExecutorAgent()),
             lambda state: state.endswith("|executed"),
             max_iterations=args.max_iterations,
         ).run(args.task_id, args.state)
+    else:
+        from .state_store import LoopStateStore
+        store = LoopStateStore(args.state_dir)
+        result = LoopOrchestrator(
+            (PlannerAgent(), ExecutorAgent()),
+            lambda state: state.endswith("|executed"),
+        ).resume(store.load(args.task_id), args.additional_iterations)
+        store.save(result)
     print(json.dumps(asdict(result), indent=2))
     return 0 if result.status == "completed" else 1
 
