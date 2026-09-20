@@ -25,3 +25,13 @@ def test_loop_command_persists_result(tmp_path, monkeypatch):
     state = (tmp_path / "task-1.json").read_text(encoding="utf-8")
     assert '"status":"completed"' in state
     assert '"final_state":"ready|planned|executed"' in state
+
+
+def test_resume_reports_missing_state_cleanly(tmp_path, monkeypatch, capsys):
+    monkeypatch.setattr(
+        "sys.argv",
+        ["digital-fte", "--state-dir", str(tmp_path), "resume", "missing-task"],
+    )
+
+    assert main() == 2
+    assert capsys.readouterr().out.strip() == '{"status": "missing_state", "task_id": "missing-task"}'
