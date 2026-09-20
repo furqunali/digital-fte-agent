@@ -17,10 +17,12 @@ class LoopStateStore:
     def save(self, result: LoopResult) -> Path:
         self.root.mkdir(parents=True, exist_ok=True)
         path = self.root / f"{result.task_id}.json"
-        path.write_text(
+        temporary = path.with_suffix(path.suffix + ".tmp")
+        temporary.write_text(
             json.dumps(asdict(result), sort_keys=True, separators=(",", ":")),
             encoding="utf-8",
         )
+        temporary.replace(path)
         return path
 
     def load(self, task_id: str) -> LoopResult:
