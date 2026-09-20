@@ -25,6 +25,13 @@ class ExecutorAgent:
         return context.state if context.state.endswith("|executed") else context.state + "|executed"
 
 
+def _positive_int(value: str) -> int:
+    parsed = int(value)
+    if parsed < 1:
+        raise argparse.ArgumentTypeError("value must be a positive integer")
+    return parsed
+
+
 def build_parser():
     parser = argparse.ArgumentParser(description="Run Digital FTE tasks from a vault")
     parser.add_argument("--vault", type=Path, default=Path("AI_Employee_Vault"))
@@ -35,10 +42,10 @@ def build_parser():
     loop = sub.add_parser("loop", help="run the deterministic multi-agent loop")
     loop.add_argument("task_id")
     loop.add_argument("state")
-    loop.add_argument("--max-iterations", type=int, default=3)
+    loop.add_argument("--max-iterations", type=_positive_int, default=3)
     resume = sub.add_parser("resume", help="resume a persisted multi-agent loop")
     resume.add_argument("task_id")
-    resume.add_argument("--additional-iterations", type=int, default=1)
+    resume.add_argument("--additional-iterations", type=_positive_int, default=1)
     return parser
 
 
@@ -63,6 +70,9 @@ def main():
             persisted = store.load(args.task_id)
         except FileNotFoundError:
             print(json.dumps({"task_id": args.task_id, "status": "missing_state"}))
+            return 2
+        except (json.JSONDecodeError, KeyError, TypeError):
+            print(json.dumps({"task_id": args.task_id, "status": "invalid_state"}))
             return 2
         result = LoopOrchestrator(
             (PlannerAgent(), ExecutorAgent()),
