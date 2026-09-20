@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from pathlib import Path
 
 from .engine import TaskEngine
@@ -15,6 +15,14 @@ class PlannerAgent:
 
     def run(self, context: LoopContext) -> str:
         return context.state if context.state.endswith("|planned") else context.state + "|planned"
+
+
+@dataclass(frozen=True)
+class ExecutorAgent:
+    name: str = "executor"
+
+    def run(self, context: LoopContext) -> str:
+        return context.state if context.state.endswith("|executed") else context.state + "|executed"
 
 
 def build_parser():
@@ -36,11 +44,11 @@ def main():
         result = TaskEngine(args.vault).process(args.task)
     else:
         result = LoopOrchestrator(
-            (PlannerAgent(),),
-            lambda state: state.endswith("|planned"),
+            (PlannerAgent(), ExecutorAgent()),
+            lambda state: state.endswith("|executed"),
             max_iterations=args.max_iterations,
         ).run(args.task_id, args.state)
-    print(json.dumps(result.__dict__, default=str, indent=2))
+    print(json.dumps(asdict(result), indent=2))
     return 0 if result.status == "completed" else 1
 
 
