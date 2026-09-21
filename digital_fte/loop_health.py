@@ -10,8 +10,12 @@ class LoopHealth:
     agents: int
     state_changes: int
     completed: bool
+    unique_states: int
 
 def assess_loop_health(result: LoopResult) -> LoopHealth:
     agents = {event.agent for event in result.events}
+    states = {result.final_state}
+    states.update(event.input_state for event in result.events)
+    states.update(event.output_state for event in result.events)
     changes = sum(event.output_state != event.input_state for event in result.events)
-    return LoopHealth(result.iterations, len(result.events), len(agents), changes, result.status == "completed")
+    return LoopHealth(result.iterations, len(result.events), len(agents), changes, result.status == "completed", len(states))
