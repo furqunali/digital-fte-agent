@@ -69,3 +69,13 @@ def test_load_all_propagates_corrupt_snapshot(tmp_path):
     path.write_text(json.dumps(data), encoding="utf-8")
     with pytest.raises(ValueError):
         store.load_all()
+
+
+def test_load_all_rejects_non_string_final_state(tmp_path):
+    store = LoopStateStore(tmp_path)
+    path = store.save(_completed("task-a"))
+    data = json.loads(path.read_text())
+    data["final_state"] = {"unexpected": "object"}
+    path.write_text(json.dumps(data), encoding="utf-8")
+    with pytest.raises(ValueError):
+        store.load_all()
