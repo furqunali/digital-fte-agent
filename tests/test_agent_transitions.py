@@ -5,7 +5,7 @@ def test_agent_transitions_counts_adjacent_agents():
     result = LoopResult("task","completed",1,(),(
         LoopEvent("planner",1,"start","a"), LoopEvent("validator",1,"a","b"), LoopEvent("planner",1,"b","c")
     ),"c")
-    assert agent_transitions(result) == (("planner","validator"),1),(("validator","planner"),1)
+    assert agent_transitions(result) == ((("planner","validator"),1),(("validator","planner"),1))
     assert transition_count(result) == 2
 
 def test_agent_transitions_handles_empty_result():
