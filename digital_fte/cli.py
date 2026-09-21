@@ -46,6 +46,10 @@ def build_parser():
     resume = sub.add_parser("resume", help="resume a persisted multi-agent loop")
     resume.add_argument("task_id")
     resume.add_argument("--additional-iterations", type=_positive_int, default=1)
+    sub.add_parser(
+        "status",
+        help="summarise the outcomes of every persisted multi-agent loop",
+    )
     return parser
 
 
@@ -62,6 +66,20 @@ def main():
             max_iterations=args.max_iterations,
         ).run(args.task_id, args.state)
         LoopStateStore(args.state_dir).save(result)
+    elif args.command == "status":
+        from .loop_health_report import loop_health_report_json
+        from .loop_outcomes import summarize_loop_outcomes
+        from .state_store import LoopStateStore
+
+        store = LoopStateStore(args.state_dir)
+        try:
+            persisted = store.load_all()
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
+            print(json.dumps({"status": "invalid_state"}))
+            return 2
+        summary = summarize_loop_outcomes(persisted)
+        print(loop_health_report_json(summary))
+        return 1 if summary.failed else 0
     else:
         from .state_store import LoopStateStore
 
