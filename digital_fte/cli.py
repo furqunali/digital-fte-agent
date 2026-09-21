@@ -71,7 +71,7 @@ def main():
         except FileNotFoundError:
             print(json.dumps({"task_id": args.task_id, "status": "missing_state"}))
             return 2
-        except (json.JSONDecodeError, KeyError, TypeError):
+        except (json.JSONDecodeError, KeyError, TypeError, ValueError):
             print(json.dumps({"task_id": args.task_id, "status": "invalid_state"}))
             return 2
         result = LoopOrchestrator(
