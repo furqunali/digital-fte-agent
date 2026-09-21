@@ -27,13 +27,7 @@ class LoopStateStore:
             raise ValueError("task_id must be a single path-safe name")
 
     def list_task_ids(self) -> tuple[str, ...]:
-        """Return the path-safe task ids of every persisted snapshot, sorted.
-
-        Only ``<task_id>.json`` files whose stem is a valid, path-safe task id
-        are reported; stray or unsafe filenames are ignored rather than raising,
-        so a portfolio scan never fails on an unrelated file. In-flight ``.tmp``
-        snapshots are excluded because they do not match ``*.json``.
-        """
+        """Return the path-safe task ids of every persisted snapshot, sorted."""
         if not self.root.is_dir():
             return ()
         task_ids = set()
@@ -49,12 +43,7 @@ class LoopStateStore:
         return tuple(sorted(task_ids))
 
     def load_all(self) -> tuple[LoopResult, ...]:
-        """Load every persisted snapshot in deterministic task-id order.
-
-        Propagates :class:`ValueError` from :meth:`load` if any snapshot is
-        corrupt, so callers get an explicit failure rather than a silently
-        partial portfolio.
-        """
+        """Load every persisted snapshot in deterministic task-id order."""
         return tuple(self.load(task_id) for task_id in self.list_task_ids())
 
     def save(self, result: LoopResult) -> Path:
@@ -76,7 +65,11 @@ class LoopStateStore:
             raise ValueError("persisted state has an invalid task_id")
         if data.get("status") not in {"completed", "failed"}:
             raise ValueError("persisted state has an invalid status")
-        if not isinstance(data.get("iterations"), int) or data["iterations"] < 1:
+        if (
+            not isinstance(data.get("iterations"), int)
+            or isinstance(data.get("iterations"), bool)
+            or data["iterations"] < 1
+        ):
             raise ValueError("persisted state has invalid iterations")
         steps, events = data.get("steps"), data.get("events")
         if not isinstance(steps, list) or not isinstance(events, list) or len(steps) != len(events):
