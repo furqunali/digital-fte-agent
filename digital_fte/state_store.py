@@ -26,6 +26,37 @@ class LoopStateStore:
         ):
             raise ValueError("task_id must be a single path-safe name")
 
+    def list_task_ids(self) -> tuple[str, ...]:
+        """Return the path-safe task ids of every persisted snapshot, sorted.
+
+        Only ``<task_id>.json`` files whose stem is a valid, path-safe task id
+        are reported; stray or unsafe filenames are ignored rather than raising,
+        so a portfolio scan never fails on an unrelated file. In-flight ``.tmp``
+        snapshots are excluded because they do not match ``*.json``.
+        """
+        if not self.root.is_dir():
+            return ()
+        task_ids = set()
+        for path in self.root.glob("*.json"):
+            if not path.is_file():
+                continue
+            task_id = path.stem
+            try:
+                self._validate_task_id(task_id)
+            except ValueError:
+                continue
+            task_ids.add(task_id)
+        return tuple(sorted(task_ids))
+
+    def load_all(self) -> tuple[LoopResult, ...]:
+        """Load every persisted snapshot in deterministic task-id order.
+
+        Propagates :class:`ValueError` from :meth:`load` if any snapshot is
+        corrupt, so callers get an explicit failure rather than a silently
+        partial portfolio.
+        """
+        return tuple(self.load(task_id) for task_id in self.list_task_ids())
+
     def save(self, result: LoopResult) -> Path:
         self._validate_task_id(result.task_id)
         self.root.mkdir(parents=True, exist_ok=True)
