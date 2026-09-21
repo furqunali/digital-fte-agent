@@ -8,7 +8,8 @@ def test_summary_is_sorted_and_counts_executions():
         (LoopEvent("validator", 1, "a", "b"), LoopEvent("planner", 1, "start", "a")),
         "b",
     )
-    assert summarize_agents(result) == (
+    summary = summarize_agents(result)
+    assert [(item.agent, item.executions, item.state_changes) for item in summary] == [
         ("planner", 1, 1),
         ("validator", 1, 1),
-    )
+    ]
