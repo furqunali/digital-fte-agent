@@ -45,3 +45,25 @@ def test_state_store_rejects_unsafe_task_ids(tmp_path, task_id):
     store = LoopStateStore(tmp_path)
     with pytest.raises(ValueError):
         store.load(task_id)
+
+
+def test_state_store_rejects_tampered_snapshot(tmp_path):
+    import json
+    store = LoopStateStore(tmp_path)
+    path = store.save(LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run("task-1", "start"))
+    data = json.loads(path.read_text())
+    data["task_id"] = "other-task"
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="task_id"):
+        store.load("task-1")
+
+
+def test_state_store_rejects_inconsistent_event_count(tmp_path):
+    import json
+    store = LoopStateStore(tmp_path)
+    path = store.save(LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run("task-1", "start"))
+    data = json.loads(path.read_text())
+    data["events"] = []
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="steps and events"):
+        store.load("task-1")
