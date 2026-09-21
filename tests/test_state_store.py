@@ -78,3 +78,16 @@ def test_state_store_rejects_invalid_nested_step_schema(tmp_path):
     path.write_text(json.dumps(data))
     with pytest.raises(ValueError, match="schema"):
         store.load("task-1")
+
+
+def test_state_store_rejects_boolean_iterations(tmp_path):
+    import json
+    store = LoopStateStore(tmp_path)
+    path = store.save(
+        LoopOrchestrator((Agent(),), lambda state: state.endswith("|done")).run("task-1", "start")
+    )
+    data = json.loads(path.read_text())
+    data["iterations"] = True
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError, match="iterations"):
+        store.load("task-1")
