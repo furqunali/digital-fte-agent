@@ -53,8 +53,8 @@ class LoopOrchestrator:
     ) -> None:
         if not agents:
             raise ValueError("at least one agent is required")
-        if max_iterations < 1:
-            raise ValueError("max_iterations must be positive")
+        if not isinstance(max_iterations, int) or isinstance(max_iterations, bool) or max_iterations < 1:
+            raise ValueError("max_iterations must be a positive integer")
         self.agents = agents
         self.validator = validator
         self.max_iterations = max_iterations
@@ -72,8 +72,8 @@ class LoopOrchestrator:
         """Continue an incomplete result without replaying completed iterations."""
         if result.status == "completed":
             return result
-        if additional_iterations < 1:
-            raise ValueError("additional_iterations must be positive")
+        if not isinstance(additional_iterations, int) or isinstance(additional_iterations, bool) or additional_iterations < 1:
+            raise ValueError("additional_iterations must be a positive integer")
         return self._run(
             result.task_id,
             result.final_state,
