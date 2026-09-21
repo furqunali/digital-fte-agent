@@ -44,3 +44,10 @@ def test_loop_requires_agents_and_positive_limit() -> None:
         LoopOrchestrator((), lambda _: True)
     with pytest.raises(ValueError):
         LoopOrchestrator((Planner(),), lambda _: True, max_iterations=0)
+
+
+def test_loop_rejects_non_integer_limits() -> None:
+    with pytest.raises(ValueError, match="positive integer"):
+        LoopOrchestrator((Planner(),), lambda _: True, max_iterations=1.5)
+    with pytest.raises(ValueError, match="positive integer"):
+        LoopOrchestrator((Planner(),), lambda _: True, max_iterations=True)
