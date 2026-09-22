@@ -1,5 +1,7 @@
-from digital_fte.loop import LoopEvent,LoopResult,LoopStep
-from digital_fte.loop_validation import is_valid_loop_result,validate_loop_result
+from digital_fte.loop import LoopEvent, LoopResult, LoopStep
+from digital_fte.loop_validation import is_valid_loop_result, validate_loop_result
+
+
 def test_valid_loop_result():
     r=LoopResult("t","completed",1,(LoopStep("planner","x",1),),(LoopEvent("planner",1,"a","x"),),"x")
     assert is_valid_loop_result(r)

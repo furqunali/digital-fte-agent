@@ -1,6 +1,7 @@
 from digital_fte.agent_summary import summarize_agents
 from digital_fte.loop import LoopEvent, LoopResult, LoopStep
 
+
 def test_summary_is_sorted_and_counts_executions():
     result = LoopResult(
         "task-1", "completed", 1,

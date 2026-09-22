@@ -1,6 +1,7 @@
 from digital_fte.loop import LoopResult
 from digital_fte.loop_outcomes import summarize_loop_outcomes
 
+
 def r(status):
     return LoopResult("t", status, 1, (), (), "s")
 

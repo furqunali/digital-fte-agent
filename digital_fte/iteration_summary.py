@@ -1,7 +1,10 @@
 """Deterministic per-iteration execution summaries for loop telemetry."""
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from digital_fte.loop import LoopResult
+
 
 @dataclass(frozen=True)
 class IterationSummary:

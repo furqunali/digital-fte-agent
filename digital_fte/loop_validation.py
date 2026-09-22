@@ -1,6 +1,9 @@
 """Safety checks for deterministic multi-agent state transitions."""
 from __future__ import annotations
+
 from .loop import LoopResult
+
+
 def validate_loop_result(result: LoopResult) -> tuple[str,...]:
     issues=[]
     if result.status not in {"completed","failed"}: issues.append("invalid status")

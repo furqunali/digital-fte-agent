@@ -1,7 +1,7 @@
 """Domain models used by the agent workflow."""
 from dataclasses import dataclass, field
-from enum import Enum
 from datetime import datetime, timezone
+from enum import Enum
 
 
 class TaskStatus(str, Enum):

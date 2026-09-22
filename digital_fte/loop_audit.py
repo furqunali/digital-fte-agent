@@ -1,7 +1,10 @@
 """Deterministic audit metrics for multi-agent loop results."""
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from digital_fte.loop import LoopResult
+
 
 @dataclass(frozen=True)
 class LoopAudit:

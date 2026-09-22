@@ -1,6 +1,7 @@
 from digital_fte.agent_transitions import agent_transitions, transition_count
 from digital_fte.loop import LoopEvent, LoopResult
 
+
 def test_agent_transitions_counts_adjacent_agents():
     result = LoopResult("task","completed",1,(),(
         LoopEvent("planner",1,"start","a"), LoopEvent("validator",1,"a","b"), LoopEvent("planner",1,"b","c")

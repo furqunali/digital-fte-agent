@@ -1,5 +1,6 @@
 from digital_fte.loop_report_schema import validate_loop_health_report
 
+
 def test_loop_report_rejects_wrong_completion_ratio():
     payload = {"runs": 5, "completed": 4, "failed": 1, "completion_ratio": 0.5}
     assert not validate_loop_health_report(payload)

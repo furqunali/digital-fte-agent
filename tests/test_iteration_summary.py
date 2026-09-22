@@ -1,5 +1,5 @@
-from digital_fte.loop import LoopEvent, LoopResult
 from digital_fte.iteration_summary import summarize_iterations
+from digital_fte.loop import LoopEvent, LoopResult
 
 
 def test_summarizes_iterations():

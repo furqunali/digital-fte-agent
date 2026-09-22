@@ -1,8 +1,8 @@
 """Deterministic JSON state persistence for multi-agent loops."""
 from __future__ import annotations
 
-from dataclasses import asdict
 import json
+from dataclasses import asdict
 from pathlib import Path
 
 from digital_fte.loop import LoopEvent, LoopResult, LoopStep

@@ -1,8 +1,11 @@
 """Deterministic outcome summary for completed and failed agent loops."""
 from __future__ import annotations
+
+from collections.abc import Iterable
 from dataclasses import dataclass
-from typing import Iterable
+
 from digital_fte.loop import LoopResult
+
 
 @dataclass(frozen=True)
 class LoopOutcomeSummary:

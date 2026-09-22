@@ -1,7 +1,10 @@
 from __future__ import annotations
+
 import hashlib
 from pathlib import Path
+
 from .models import Task
+
 
 def parse_task(path: Path) -> Task:
     text=path.read_text(encoding="utf-8-sig").strip()

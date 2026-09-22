@@ -1,6 +1,7 @@
 from digital_fte.loop import LoopOrchestrator
 from digital_fte.loop_audit import audit_loop
 
+
 class Agent:
     name = "planner"
     def run(self, context):
