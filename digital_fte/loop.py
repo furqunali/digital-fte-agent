@@ -101,6 +101,8 @@ class LoopOrchestrator:
             for agent in self.agents:
                 input_state = state
                 state = agent.run(LoopContext(task_id, iteration, state))
+                if not isinstance(state, str):
+                    raise TypeError(f"agent {agent.name!r} must return a string state")
                 step_list.append(LoopStep(agent.name, state, iteration))
                 event_list.append(LoopEvent(agent.name, iteration, input_state, state))
             if self.validator(state):

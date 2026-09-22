@@ -59,3 +59,14 @@ def test_resume_validates_limit_for_completed_result() -> None:
     import pytest
     with pytest.raises(ValueError, match="positive integer"):
         orchestrator.resume(result, additional_iterations=0)
+
+
+def test_loop_rejects_non_string_agent_state() -> None:
+    @dataclass(frozen=True)
+    class BadPlanner:
+        name: str = "bad-planner"
+        def run(self, context: LoopContext):
+            return None
+    orchestrator = LoopOrchestrator((BadPlanner(),), lambda _: True)
+    with pytest.raises(TypeError, match="must return a string state"):
+        orchestrator.run("task", "received")
