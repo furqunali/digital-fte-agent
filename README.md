@@ -21,6 +21,12 @@ Then drop a `.md` task file into `AI_Employee_Vault/Inbox/` and watch it get pic
 
 Part of my work on **Digital FTEs** — AI workers defined by specs + domain knowledge + human oversight. See also my [`Digital_FTE`](https://github.com/furqunali/Digital_FTE) repo.
 
+
+
+## State & CLI Reliability
+
+The persisted loop state is validated before resume: task identifiers, iteration counts, final state, nested step/event data, and collection lengths must match the stored schema. The CLI reports malformed persisted state as `invalid_state` instead of leaking a traceback, including the inconsistent step/event case covered by regression tests.
+
 ---
 
 *Part of [Furqan Ali](https://github.com/furqunali)'s portfolio — AI & Intelligent Automation / Digital Transformation.*
