@@ -70,10 +70,10 @@ class LoopOrchestrator:
 
     def resume(self, result: LoopResult, additional_iterations: int = 1) -> LoopResult:
         """Continue an incomplete result without replaying completed iterations."""
-        if result.status == "completed":
-            return result
         if not isinstance(additional_iterations, int) or isinstance(additional_iterations, bool) or additional_iterations < 1:
             raise ValueError("additional_iterations must be a positive integer")
+        if result.status == "completed":
+            return result
         return self._run(
             result.task_id,
             result.final_state,
