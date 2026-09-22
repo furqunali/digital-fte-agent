@@ -19,7 +19,6 @@ class ValidatorInput:
 
 
 def test_loop_stops_after_validation_success() -> None:
-    calls = ValidatorInput()
     orchestrator = LoopOrchestrator((Planner(),), lambda state: state.endswith("planned"), max_iterations=3)
     result = orchestrator.run("task-1", "received")
     assert result.status == "completed"

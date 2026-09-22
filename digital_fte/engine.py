@@ -17,7 +17,7 @@ class TaskEngine:
         try:
             output.write_text(f"# Task Result: {task.title}\\n\\nStatus: completed\\n\\n## Received Instruction\\n\\n{task.body}\\n",encoding="utf-8")
             status="completed"; error=None
-        except Exception as exc:
+        except Exception as exc:  # noqa: BLE001 - any failure marks the task failed
             status="failed"; error=str(exc)
         finished=datetime.now(timezone.utc).isoformat()
         log.write_text(f"task_id={task.task_id}\\nstatus={status}\\nstarted_at={started}\\nfinished_at={finished}\\nerror={error or ''}\\n",encoding="utf-8")

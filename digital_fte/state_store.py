@@ -76,7 +76,7 @@ class LoopStateStore:
             raise ValueError("persisted state has inconsistent steps and events")
         try:
             if not isinstance(data.get("final_state"), str):
-                raise ValueError("invalid persisted final_state")
+                raise ValueError("invalid persisted final_state")  # noqa: TRY004 - schema errors are reported as ValueError
             if not all(isinstance(s, dict) and isinstance(s.get("agent"), str) and isinstance(s.get("state"), str) and isinstance(s.get("iteration"), int) and not isinstance(s.get("iteration"), bool) and s["iteration"] >= 1 for s in steps):
                 raise ValueError("invalid persisted step schema")
             if not all(isinstance(e, dict) and isinstance(e.get("agent"), str) and isinstance(e.get("iteration"), int) and not isinstance(e.get("iteration"), bool) and e["iteration"] >= 1 and isinstance(e.get("input_state"), str) and isinstance(e.get("output_state"), str) for e in events):
