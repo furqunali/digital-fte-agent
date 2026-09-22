@@ -8,7 +8,6 @@ def test_loop_health_export_is_deterministic():
     }
     assert loop_health_report_json(result) == '{"completed": 4, "completion_ratio": 0.8, "failed": 1, "runs": 5}'
 
-
 def test_loop_health_export_rejects_wrong_type():
     try:
         loop_health_report_dict(None)
@@ -16,3 +15,6 @@ def test_loop_health_export_rejects_wrong_type():
         pass
     else:
         raise AssertionError("expected TypeError")
+
+def test_loop_health_export_enforces_schema():
+    assert loop_health_report_dict(LoopOutcomeSummary(1, 1, 0, 1.0))["runs"] == 1
