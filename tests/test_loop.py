@@ -51,3 +51,11 @@ def test_loop_rejects_non_integer_limits() -> None:
         LoopOrchestrator((Planner(),), lambda _: True, max_iterations=1.5)
     with pytest.raises(ValueError, match="positive integer"):
         LoopOrchestrator((Planner(),), lambda _: True, max_iterations=True)
+
+
+def test_resume_validates_limit_for_completed_result() -> None:
+    orchestrator = LoopOrchestrator((Planner(),), lambda state: True)
+    result = orchestrator.run("task", "start")
+    import pytest
+    with pytest.raises(ValueError, match="positive integer"):
+        orchestrator.resume(result, additional_iterations=0)
