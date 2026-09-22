@@ -21,6 +21,6 @@ def summarize_loop_health(health: LoopHealth) -> LoopHealthSummary:
         issues.append("loop did not complete")
     if health.events and health.state_changes == 0:
         issues.append("no state changes observed")
-    if health.agents == 0:
+    if health.agents == 0 and (not health.completed or health.iterations > 1):
         issues.append("no agents observed")
     return LoopHealthSummary("healthy" if not issues else "attention", tuple(issues))
