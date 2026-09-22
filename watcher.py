@@ -1,7 +1,9 @@
-﻿import time
-import os
-from watchdog.observers import Observer
+﻿import os
+import time
+
 from watchdog.events import FileSystemEventHandler
+from watchdog.observers import Observer
+
 
 class NewTaskHandler(FileSystemEventHandler):
     def on_created(self, event):
@@ -17,7 +19,7 @@ class NewTaskHandler(FileSystemEventHandler):
             with open(output_path, "w") as f:
                 f.write("# Social Media Growth Plan\n\n1. Post daily updates.\n2. Engage with community.\n3. Audit weekly revenue.")
             
-            print(f"[!] ✅ Success! Result saved in Dashboard/SocialPlan.md")
+            print("[!] ✅ Success! Result saved in Dashboard/SocialPlan.md")
 
 if __name__ == "__main__":
     path_to_watch = "./AI_Employee_Vault/Inbox"

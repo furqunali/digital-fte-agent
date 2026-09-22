@@ -1,8 +1,11 @@
 """Deterministic per-agent execution summaries for loop telemetry."""
 from __future__ import annotations
+
 from collections import Counter
 from dataclasses import dataclass
+
 from digital_fte.loop import LoopResult
+
 
 @dataclass(frozen=True)
 class AgentSummary:

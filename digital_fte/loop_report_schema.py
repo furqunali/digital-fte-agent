@@ -1,5 +1,6 @@
 """Schema validation for exported agent-loop health reports."""
 from __future__ import annotations
+
 REQUIRED_FIELDS = frozenset({"runs","completed","failed","completion_ratio"})
 def validate_loop_health_report(payload: dict) -> bool:
     if not isinstance(payload, dict) or set(payload) != REQUIRED_FIELDS: return False

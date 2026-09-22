@@ -1,9 +1,12 @@
 """Stable JSON export for agent-loop outcome summaries."""
 from __future__ import annotations
+
 import json
 from dataclasses import asdict
+
 from digital_fte.loop_outcomes import LoopOutcomeSummary
 from digital_fte.loop_report_schema import validate_loop_health_report
+
 
 def loop_health_report_dict(result: LoopOutcomeSummary) -> dict:
     if not isinstance(result, LoopOutcomeSummary):

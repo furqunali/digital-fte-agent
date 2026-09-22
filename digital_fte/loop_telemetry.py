@@ -1,8 +1,8 @@
 """Stable JSON contract for multi-agent loop telemetry."""
 from __future__ import annotations
 
-from dataclasses import asdict
 import json
+from dataclasses import asdict
 
 from digital_fte.loop import LoopResult
 

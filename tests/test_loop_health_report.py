@@ -1,5 +1,9 @@
+from digital_fte.loop_health_report import (
+    loop_health_report_dict,
+    loop_health_report_json,
+)
 from digital_fte.loop_outcomes import LoopOutcomeSummary
-from digital_fte.loop_health_report import loop_health_report_dict, loop_health_report_json
+
 
 def test_loop_health_export_is_deterministic():
     result = LoopOutcomeSummary(5, 4, 1, 0.8)

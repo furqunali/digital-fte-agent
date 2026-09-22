@@ -1,7 +1,10 @@
 """Deterministic health metrics for an agent orchestration run."""
 from __future__ import annotations
+
 from dataclasses import dataclass
+
 from digital_fte.loop import LoopResult
+
 
 @dataclass(frozen=True)
 class LoopHealth:
