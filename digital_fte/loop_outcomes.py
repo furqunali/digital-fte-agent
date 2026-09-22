@@ -13,6 +13,8 @@ class LoopOutcomeSummary:
 
 def summarize_loop_outcomes(results: Iterable[LoopResult]) -> LoopOutcomeSummary:
     items = list(results)
+    if any(not isinstance(item, LoopResult) for item in items):
+        raise TypeError("results must contain LoopResult values")
     completed = sum(result.status == "completed" for result in items)
     runs = len(items)
     return LoopOutcomeSummary(runs, completed, runs - completed, round(completed / runs, 4) if runs else 0.0)
