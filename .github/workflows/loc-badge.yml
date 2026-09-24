@@ -1,0 +1,38 @@
+name: LOC Badge
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: loc-badge
+  cancel-in-progress: true
+
+jobs:
+  loc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Count lines of code
+        run: python .github/badges/count_loc.py
+
+      - name: Commit badge if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet -- .github/badges/loc.json; then
+            echo "LOC badge unchanged."
+            exit 0
+          fi
+          git add .github/badges/loc.json
+          git commit -m "chore: update LOC badge [skip ci]"
+          git push

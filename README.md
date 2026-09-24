@@ -1,5 +1,7 @@
 # 🤖 Digital FTE Agent — Sentinel
 
+![Lines of code](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/furqunali/digital-fte-agent/main/.github/badges/loc.json)
+
 A prototype **"Digital FTE" (Full-Time-Equivalent) sentinel**: a background agent that watches an inbox for new instructions, processes them, and writes results back to a dashboard — the seed of an AI co-worker that handles tasks autonomously.
 
 ## How it works
